@@ -5,3 +5,8 @@ api-version: '1.21'
 author: Brynner
 description: A high-performance, modular Prison Core plugin for the Ascendia Network.
 depend: [Vault, PlaceholderAPI]
+commands:
+  rankup:
+    description: Rank up to the next mine
+    usage: /rankup
+    permission: ascendia.rankup
