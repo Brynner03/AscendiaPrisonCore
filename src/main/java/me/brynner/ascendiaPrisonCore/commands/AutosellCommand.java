@@ -2,8 +2,10 @@ package me.brynner.ascendiaPrisonCore.commands;
 
 import me.brynner.ascendiaPrisonCore.AscendiaPrisonCore;
 import me.brynner.ascendiaPrisonCore.data.PlayerData;
+import me.brynner.ascendiaPrisonCore.utils.PriceUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,13 +29,13 @@ public class AutosellCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command!");
+            sender.sendMessage(Component.text("Only players can use this command!", NamedTextColor.RED));
             return true;
         }
 
         Player player = (Player) sender;
         if (!player.hasPermission("ascendia.autosell")) {
-            player.sendMessage(ChatColor.RED + "You don’t have permission to use this command!");
+            player.sendMessage(Component.text("You don’t have permission to use this command!", NamedTextColor.RED));
             return true;
         }
 
@@ -42,23 +44,24 @@ public class AutosellCommand implements CommandExecutor {
         data.setAutosellEnabled(newState);
 
         if (newState) {
-            player.sendMessage(ChatColor.GREEN + "Autosell enabled! Selling all items now...");
-            sellInventory(player);
+            player.sendMessage(Component.text("Autosell enabled!", NamedTextColor.GREEN));
+            sellInventory(player, data);
 
-            // Schedule repeating sell every 3 minutes (3 * 60 * 20 ticks)
+            int interval = plugin.getConfig().getInt("autosell.interval-seconds", 180);
+            long ticks = interval * 20L;
+
             int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
                 if (data.isAutosellEnabled() && player.isOnline()) {
-                    sellInventory(player);
+                    sellInventory(player, data);
                 } else {
                     cancelAutosell(player);
                 }
-                // Delay and repeat every 3 min
-            }, 20L * 180, 20L * 180);
+            }, ticks, ticks);
 
             autosellTasks.put(player.getUniqueId(), taskId);
 
         } else {
-            player.sendMessage(ChatColor.RED + "Autosell disabled!");
+            player.sendMessage(Component.text("Autosell disabled!", NamedTextColor.RED));
             cancelAutosell(player);
         }
 
@@ -72,37 +75,34 @@ public class AutosellCommand implements CommandExecutor {
         }
     }
 
-    private void sellInventory(Player player) {
+    private void sellInventory(Player player, PlayerData data) {
         double total = 0.0;
 
         for (ItemStack item : player.getInventory().getContents()) {
             if (item == null) continue;
 
-            double pricePer = getBlockPrice(item.getType());
-            if (pricePer > 0) {
-                total += pricePer * item.getAmount();
-                player.getInventory().remove(item);
-            }
+            Material type = item.getType();
+
+            // Only sell items that exist in config
+            if (!plugin.getConfig().contains("sellable-items." + type.name())) continue;
+
+            // Get base value from config, then apply rank/prestige multipliers
+            double basePrice = plugin.getConfig().getDouble("sellable-items." + type.name(), 0.0);
+            double dynamicPrice = PriceUtil.getDynamicBlockPrice(type, data.getRank(), data.getPrestige());
+
+            // If you want to multiply config basePrice * dynamic multipliers instead of overriding, use:
+            // double dynamicPrice = basePrice * PriceUtil.getDynamicMultiplier(data.getRank(), data.getPrestige());
+
+            total += dynamicPrice * item.getAmount();
+            player.getInventory().remove(item);
         }
 
         if (total > 0) {
             plugin.getEconomy().depositPlayer(player, total);
-            player.sendMessage(ChatColor.YELLOW + "Autosold inventory for " +
-                    ChatColor.GREEN + "$" + String.format("%,.0f", total));
-        }
-    }
 
-    private double getBlockPrice(Material material) {
-        switch (material) {
-            case DIAMOND_BLOCK: return 5000;
-            case EMERALD_BLOCK: return 7500;
-            case GOLD_BLOCK: return 2500;
-            case IRON_BLOCK: return 1500;
-            case COAL_BLOCK: return 1000;
-            case STONE: return 25;
-            case COBBLESTONE: return 20;
-            case NETHERRACK: return 10;
-            default: return 0;
+            Component message = Component.text("Autosold inventory for ", NamedTextColor.YELLOW)
+                    .append(Component.text("$" + String.format("%,.0f", total), NamedTextColor.GREEN));
+            player.sendMessage(message);
         }
     }
 }

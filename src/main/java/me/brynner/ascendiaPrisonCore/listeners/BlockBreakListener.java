@@ -2,7 +2,8 @@ package me.brynner.ascendiaPrisonCore.listeners;
 
 import me.brynner.ascendiaPrisonCore.AscendiaPrisonCore;
 import me.brynner.ascendiaPrisonCore.data.PlayerData;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -28,9 +29,7 @@ public class BlockBreakListener implements Listener {
         data.addTokens(tokensGained);
 
         if (random.nextInt(100) < 10) { // 10% chance to show message
-            event.getPlayer().sendMessage(ChatColor.AQUA + "+"
-                    + tokensGained + " Tokens! " + ChatColor.GRAY
-                    + "(Total: " + data.getTokens() + ")");
+            event.getPlayer().sendMessage(Component.text("You have earned " + tokensGained + " Tokens! (Total: " + data.getTokens() + ")", NamedTextColor.AQUA));
         }
     }
 }

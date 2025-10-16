@@ -3,7 +3,7 @@ package me.brynner.ascendiaPrisonCore;
 import me.brynner.ascendiaPrisonCore.commands.AutosellCommand;
 import me.brynner.ascendiaPrisonCore.commands.RankupCommand;
 import me.brynner.ascendiaPrisonCore.data.PlayerDataManager;
-import me.brynner.ascendiaPrisonCore.listeners.AutosellListener;
+import me.brynner.ascendiaPrisonCore.listeners.AutosmeltListener;
 import me.brynner.ascendiaPrisonCore.listeners.BlockBreakListener;
 import me.brynner.ascendiaPrisonCore.listeners.PlayerJoinQuitListener;
 import me.brynner.ascendiaPrisonCore.placeholders.PrisonExpansion;
@@ -42,10 +42,12 @@ public final class AscendiaPrisonCore extends JavaPlugin {
             getLogger().warning("PlaceholderAPI not found! Skipping placeholder registration.");
         }
 
+        saveDefaultConfig();
+    getServer().getPluginManager().registerEvents(new AutosmeltListener(this), this);
+        getLogger().info("Configuration loaded successfully!");
         getLogger().info("Ascendia Prison Core enabled successfully!");
         getCommand("rankup").setExecutor(new RankupCommand(this));
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
-        getServer().getPluginManager().registerEvents(new AutosellListener(this), this);
         getCommand("autosell").setExecutor(new AutosellCommand(this));
 
     }

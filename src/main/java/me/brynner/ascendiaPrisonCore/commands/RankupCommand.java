@@ -2,7 +2,8 @@ package me.brynner.ascendiaPrisonCore.commands;
 
 import me.brynner.ascendiaPrisonCore.AscendiaPrisonCore;
 import me.brynner.ascendiaPrisonCore.data.PlayerData;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,7 +20,7 @@ public class RankupCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command!");
+            sender.sendMessage(Component.text("Only players can use this command!", NamedTextColor.RED));
             return true;
         }
 
@@ -30,7 +31,7 @@ public class RankupCommand implements CommandExecutor {
         String nextRank = getNextRank(currentRank);
 
         if (nextRank == null) {
-            player.sendMessage(ChatColor.GOLD + "You are at the highest rank!");
+            player.sendMessage(Component.text("You are at the highest rank!", NamedTextColor.GOLD));
             return true;
         }
 
@@ -38,7 +39,12 @@ public class RankupCommand implements CommandExecutor {
         double balance = plugin.getEconomy().getBalance(player);
 
         if (balance < cost) {
-            player.sendMessage(ChatColor.RED + "You need $" + cost + " to rank up to " + nextRank + "!");
+            Component message = Component.text("You need $", NamedTextColor.RED)
+                    .append(Component.text(String.format("%,.0f", cost), NamedTextColor.GOLD))
+                    .append(Component.text(" to rank up to ", NamedTextColor.RED))
+                    .append(Component.text(nextRank, NamedTextColor.YELLOW))
+                    .append(Component.text("!", NamedTextColor.RED));
+            player.sendMessage(message);
             return true;
         }
 
@@ -46,7 +52,11 @@ public class RankupCommand implements CommandExecutor {
         plugin.getEconomy().withdrawPlayer(player, cost);
         data.setRank(nextRank);
 
-        player.sendMessage(ChatColor.GREEN + "You ranked up to " + ChatColor.GOLD + nextRank + ChatColor.GREEN + "!");
+        Component success = Component.text("You ranked up to ", NamedTextColor.GREEN)
+                .append(Component.text(nextRank, NamedTextColor.GOLD))
+                .append(Component.text("!", NamedTextColor.GREEN));
+
+        player.sendMessage(success);
         plugin.getLogger().info(player.getName() + " ranked up to " + nextRank);
         return true;
     }
