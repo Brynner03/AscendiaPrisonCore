@@ -1,6 +1,7 @@
 package me.brynner.ascendiaPrisonCore.listeners;
 
 import me.brynner.ascendiaPrisonCore.AscendiaPrisonCore;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -29,6 +30,10 @@ public class AutosmeltListener implements Listener {
         if (event.isCancelled()) return;
 
         Player player = event.getPlayer();
+
+        // 🚫 Skip creative players
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+
         Block block = event.getBlock();
         Material type = block.getType();
 

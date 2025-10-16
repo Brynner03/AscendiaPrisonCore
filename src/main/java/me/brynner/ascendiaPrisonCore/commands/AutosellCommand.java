@@ -88,7 +88,8 @@ public class AutosellCommand implements CommandExecutor {
 
             // Get base value from config, then apply rank/prestige multipliers
             double basePrice = plugin.getConfig().getDouble("sellable-items." + type.name(), 0.0);
-            double dynamicPrice = PriceUtil.getDynamicBlockPrice(type, data.getRank(), data.getPrestige());
+            double dynamicPrice = PriceUtil.getDynamicBlockPrice(type, basePrice, data.getRank(), data.getPrestige());
+
 
             // If you want to multiply config basePrice * dynamic multipliers instead of overriding, use:
             // double dynamicPrice = basePrice * PriceUtil.getDynamicMultiplier(data.getRank(), data.getPrestige());
