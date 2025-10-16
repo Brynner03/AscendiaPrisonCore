@@ -28,6 +28,11 @@ public class PlayerData {
         this.rank = rank;
     }
 
+    public void addTokens(int amount) {
+        this.tokens += amount;
+    }
+
+
     public int getTokens() {
         return tokens;
     }
@@ -43,4 +48,5 @@ public class PlayerData {
     public void setPrestige(int prestige) {
         this.prestige = prestige;
     }
+
 }

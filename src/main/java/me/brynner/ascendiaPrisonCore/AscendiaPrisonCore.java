@@ -2,6 +2,7 @@ package me.brynner.ascendiaPrisonCore;
 
 import me.brynner.ascendiaPrisonCore.commands.RankupCommand;
 import me.brynner.ascendiaPrisonCore.data.PlayerDataManager;
+import me.brynner.ascendiaPrisonCore.listeners.BlockBreakListener;
 import me.brynner.ascendiaPrisonCore.listeners.PlayerJoinQuitListener;
 import me.brynner.ascendiaPrisonCore.placeholders.PrisonExpansion;
 import net.milkbowl.vault.economy.Economy;
@@ -41,6 +42,8 @@ public final class AscendiaPrisonCore extends JavaPlugin {
 
         getLogger().info("Ascendia Prison Core enabled successfully!");
         getCommand("rankup").setExecutor(new RankupCommand(this));
+        getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
+
 
     }
 
