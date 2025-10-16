@@ -10,3 +10,11 @@ commands:
     description: Rank up to the next mine
     usage: /rankup
     permission: ascendia.rankup
+    autosell:
+      description: Toggle automatic block selling
+      usage: /autosell
+      permission: ascendia.autosell
+permissions:
+  ascendia.autosell:
+    description: Allows player to use autosell feature
+    default: false

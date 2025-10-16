@@ -8,6 +8,7 @@ public class PlayerData {
     private String rank;
     private int tokens;
     private int prestige;
+    private boolean autosellEnabled = true;
 
     public PlayerData(UUID uuid) {
         this.uuid = uuid;
@@ -48,5 +49,14 @@ public class PlayerData {
     public void setPrestige(int prestige) {
         this.prestige = prestige;
     }
+
+    public boolean isAutosellEnabled() {
+        return autosellEnabled;
+    }
+
+    public void setAutosellEnabled(boolean autosellEnabled) {
+        this.autosellEnabled = autosellEnabled;
+    }
+
 
 }
