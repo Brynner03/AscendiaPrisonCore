@@ -1,0 +1,4 @@
+name: AscendiaPrisonCore
+version: '1.0-SNAPSHOT'
+main: me.brynner.ascendiaPrisonCore.AscendiaPrisonCore
+api-version: '1.21'
