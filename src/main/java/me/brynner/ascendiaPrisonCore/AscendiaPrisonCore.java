@@ -7,6 +7,7 @@ import me.brynner.ascendiaPrisonCore.listeners.AutosmeltListener;
 import me.brynner.ascendiaPrisonCore.listeners.BlockBreakListener;
 import me.brynner.ascendiaPrisonCore.listeners.PlayerJoinQuitListener;
 import me.brynner.ascendiaPrisonCore.placeholders.PrisonExpansion;
+import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -22,9 +23,9 @@ public final class AscendiaPrisonCore extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        // Hook into Vault
+        // Hook into Vault for Economy and Chat
         if (!setupEconomy()) {
-            getLogger().severe("Vault not found or no economy plugin detected! Disabling plugin...");
+            getLogger().severe("Vault or Chat provider not found! Disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -44,11 +45,12 @@ public final class AscendiaPrisonCore extends JavaPlugin {
         saveDefaultConfig();
         getLogger().info("Configuration loaded successfully!");
 
-        // Register core commands and listeners
+        // Initialize commands
         AutosellCommand autosellCommand = new AutosellCommand(this);
         getCommand("autosell").setExecutor(autosellCommand);
         getCommand("rankup").setExecutor(new RankupCommand(this));
 
+        // Register listeners
         getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(playerDataManager, autosellCommand), this);
         getServer().getPluginManager().registerEvents(new AutosmeltListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
@@ -58,8 +60,15 @@ public final class AscendiaPrisonCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getLogger().info("Ascendia Prison Core disabled.");
+        if (playerDataManager != null) {
+            playerDataManager.saveAll();
+        }
+        getLogger().info("Ascendia Prison Core disabled and player data saved.");
     }
+
+    // -------------------------------
+    // Vault Economy + Chat Integration
+    // -------------------------------
 
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null)
@@ -71,6 +80,10 @@ public final class AscendiaPrisonCore extends JavaPlugin {
         return economy != null;
     }
 
+    // -------------------------------
+    // Getters
+    // -------------------------------
+
     public static AscendiaPrisonCore getInstance() {
         return instance;
     }
@@ -78,6 +91,7 @@ public final class AscendiaPrisonCore extends JavaPlugin {
     public Economy getEconomy() {
         return economy;
     }
+
 
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;

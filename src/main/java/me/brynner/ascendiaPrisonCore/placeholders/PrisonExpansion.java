@@ -14,12 +14,12 @@ public class PrisonExpansion extends PlaceholderExpansion {
 
     @Override
     public String getIdentifier() {
-        return "prison";
+        return "ascendia";
     }
 
     @Override
     public String getAuthor() {
-        return "Brynner";
+        return "Cirkitry";
     }
 
     @Override
@@ -38,6 +38,11 @@ public class PrisonExpansion extends PlaceholderExpansion {
                 return String.valueOf(plugin.getPlayerDataManager()
                         .getData(player)
                         .getTokens());
+            case "prestige":
+                return String.valueOf(plugin.getPlayerDataManager()
+                        .getData(player)
+                        .getPrestige());
+
             default:
                 return null;
         }
