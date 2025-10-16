@@ -16,7 +16,6 @@ public final class AscendiaPrisonCore extends JavaPlugin {
 
     private static AscendiaPrisonCore instance;
     private Economy economy;
-
     private PlayerDataManager playerDataManager;
 
     @Override
@@ -30,9 +29,8 @@ public final class AscendiaPrisonCore extends JavaPlugin {
             return;
         }
 
+        // Player data setup
         playerDataManager = new PlayerDataManager();
-        getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(playerDataManager), this);
-
 
         // Hook into PlaceholderAPI
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -42,14 +40,20 @@ public final class AscendiaPrisonCore extends JavaPlugin {
             getLogger().warning("PlaceholderAPI not found! Skipping placeholder registration.");
         }
 
+        // Load config
         saveDefaultConfig();
-    getServer().getPluginManager().registerEvents(new AutosmeltListener(this), this);
         getLogger().info("Configuration loaded successfully!");
-        getLogger().info("Ascendia Prison Core enabled successfully!");
-        getCommand("rankup").setExecutor(new RankupCommand(this));
-        getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
-        getCommand("autosell").setExecutor(new AutosellCommand(this));
 
+        // Register core commands and listeners
+        AutosellCommand autosellCommand = new AutosellCommand(this);
+        getCommand("autosell").setExecutor(autosellCommand);
+        getCommand("rankup").setExecutor(new RankupCommand(this));
+
+        getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(playerDataManager, autosellCommand), this);
+        getServer().getPluginManager().registerEvents(new AutosmeltListener(this), this);
+        getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
+
+        getLogger().info("Ascendia Prison Core enabled successfully!");
     }
 
     @Override
@@ -60,8 +64,7 @@ public final class AscendiaPrisonCore extends JavaPlugin {
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null)
             return false;
-        RegisteredServiceProvider<Economy> rsp =
-                getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null)
             return false;
         economy = rsp.getProvider();
@@ -79,5 +82,4 @@ public final class AscendiaPrisonCore extends JavaPlugin {
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
     }
-
 }

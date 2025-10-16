@@ -75,6 +75,14 @@ public class AutosellCommand implements CommandExecutor {
         }
     }
 
+    public void handlePlayerQuit(UUID uuid) {
+        Integer taskId = autosellTasks.remove(uuid);
+        if (taskId != null) {
+            Bukkit.getScheduler().cancelTask(taskId);
+        }
+    }
+
+
     private void sellInventory(Player player, PlayerData data) {
         double total = 0.0;
 
