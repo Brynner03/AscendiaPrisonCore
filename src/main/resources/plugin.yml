@@ -6,15 +6,21 @@ author: Brynner
 description: A high-performance, modular Prison Core plugin for the Ascendia Network.
 depend: [Vault, PlaceholderAPI]
 commands:
+  autosell:
+    description: Toggle automatic block selling
+    usage: /autosell
+    permission: ascendia.autosell
+
   rankup:
     description: Rank up to the next mine
     usage: /rankup
     permission: ascendia.rankup
-    autosell:
-      description: Toggle automatic block selling
-      usage: /autosell
-      permission: ascendia.autosell
+
 permissions:
   ascendia.autosell:
-    description: Allows player to use autosell feature
+    description: Allows use of /autosell and the autosell feature
+    default: false
+
+  ascendia.rankup:
+    description: Allows a player to use /rankup
     default: false
