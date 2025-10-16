@@ -1,5 +1,7 @@
 package me.brynner.ascendiaPrisonCore;
 
+import me.brynner.ascendiaPrisonCore.data.PlayerDataManager;
+import me.brynner.ascendiaPrisonCore.listeners.PlayerJoinQuitListener;
 import me.brynner.ascendiaPrisonCore.placeholders.PrisonExpansion;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -11,6 +13,8 @@ public final class AscendiaPrisonCore extends JavaPlugin {
     private static AscendiaPrisonCore instance;
     private Economy economy;
 
+    private PlayerDataManager playerDataManager;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -21,6 +25,10 @@ public final class AscendiaPrisonCore extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        playerDataManager = new PlayerDataManager();
+        getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(playerDataManager), this);
+
 
         // Hook into PlaceholderAPI
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -56,4 +64,9 @@ public final class AscendiaPrisonCore extends JavaPlugin {
     public Economy getEconomy() {
         return economy;
     }
+
+    public PlayerDataManager getPlayerDataManager() {
+        return playerDataManager;
+    }
+
 }

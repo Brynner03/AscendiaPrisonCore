@@ -31,9 +31,13 @@ public class PrisonExpansion extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player player, String identifier) {
         switch (identifier.toLowerCase()) {
             case "rank":
-                return "A"; // temporary test value
+                return plugin.getPlayerDataManager()
+                        .getData(player)
+                        .getRank();
             case "tokens":
-                return "0"; // temporary test value
+                return String.valueOf(plugin.getPlayerDataManager()
+                        .getData(player)
+                        .getTokens());
             default:
                 return null;
         }
